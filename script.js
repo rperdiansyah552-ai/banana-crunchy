@@ -1,0 +1,19 @@
+// GANTI nomor berikut dengan nomor WhatsApp Business: kode negara 62, tanpa + atau 0 awal.
+const WHATSAPP_NUMBER = "6281234567890";
+const products=[
+ {id:"original",name:"Original",price:12000,color:"#f4df83",desc:"Keripik pisang original dengan cita rasa gurih dan renyah.",img:"assets/original.svg"},
+ {id:"coklat",name:"Cokelat",price:15000,color:"#b78358",desc:"Keripik pisang dengan sentuhan rasa cokelat.",img:"assets/coklat.svg"},
+ {id:"stroberi",name:"Stroberi",price:15000,color:"#e8a1ae",desc:"Keripik pisang dengan sentuhan rasa stroberi.",img:"assets/stroberi.svg"},
+ {id:"matcha",name:"Matcha",price:15000,color:"#9bb68a",desc:"Keripik pisang dengan sentuhan rasa matcha.",img:"assets/matcha.svg"},
+ {id:"taro",name:"Taro",price:15000,color:"#b5a0d2",desc:"Keripik pisang dengan sentuhan rasa taro.",img:"assets/taro.svg"}
+];
+const rupiah=n=>new Intl.NumberFormat("id-ID",{style:"currency",currency:"IDR",maximumFractionDigits:0}).format(n);
+let cart={},selected=null;
+const catalog=document.querySelector('#catalog'),detail=document.querySelector('#detail'),formDialog=document.querySelector('#form');
+products.forEach(p=>{catalog.insertAdjacentHTML('beforeend',`<article class="product"><img src="${p.img}" alt="Keripik pisang ${p.name}"><div class="content"><h3>${p.name}</h3><div class="price">${rupiah(p.price)}</div><div class="stars">★★★★★ <span class="small">(5/5)</span></div><button class="cta" onclick="showDetail('${p.id}')">Lihat produk</button></div></article>`)});
+window.showDetail=id=>{selected=products.find(p=>p.id===id);document.querySelector('#dname').textContent=selected.name;document.querySelector('#dimg').src=selected.img;document.querySelector('#dimg').alt=selected.name;document.querySelector('#ddesc').textContent=selected.desc;document.querySelector('#dprice').textContent=rupiah(selected.price);detail.showModal()};
+document.querySelector('#close').onclick=()=>detail.close();document.querySelector('#add').onclick=()=>{cart[selected.id]=(cart[selected.id]||0)+1;detail.close();renderCart()};
+function renderCart(){let el=document.querySelector('#items');let ids=Object.keys(cart);document.querySelector('#badge').textContent=ids.reduce((a,id)=>a+cart[id],0);if(!ids.length){el.textContent="Keranjang masih kosong."}else{el.innerHTML=ids.map(id=>{let p=products.find(x=>x.id===id);return `<div class="cart-line"><span>${p.name} × ${cart[id]}<br><small>${rupiah(p.price)} per bungkus</small></span><span><b>${rupiah(p.price*cart[id])}</b><br><button onclick="changeQty('${id}',-1)">−</button> <button onclick="changeQty('${id}',1)">+</button> <button onclick="removeItem('${id}')">Hapus</button></span></div>`}).join('')}document.querySelector('#total').textContent=rupiah(ids.reduce((s,id)=>s+products.find(p=>p.id===id).price*cart[id],0)}
+window.changeQty=(id,n)=>{cart[id]+=n;if(cart[id]<=0)delete cart[id];renderCart()};window.removeItem=id=>{delete cart[id];renderCart()};
+document.querySelector('#checkout').onclick=()=>{if(!Object.keys(cart).length){alert('Keranjang masih kosong.');return}formDialog.showModal()};document.querySelector('#cancel').onclick=()=>formDialog.close();
+document.querySelector('#order').onsubmit=e=>{e.preventDefault();const fd=new FormData(e.target);let lines=Object.keys(cart).map(id=>{let p=products.find(x=>x.id===id);return `- ${p.name} x${cart[id]} = ${rupiah(p.price*cart[id])}`});let total=Object.keys(cart).reduce((s,id)=>s+products.find(p=>p.id===id).price*cart[id],0);let msg=`Halo Banana Crunch! Saya ingin memesan:\n\n${lines.join('\n')}\n\nTOTAL: ${rupiah(total)}\n\nNama: ${fd.get('nama')}\nNo. HP: ${fd.get('hp')}\nAlamat: ${fd.get('alamat')}\nCatatan: ${fd.get('catatan')||'-'}`;let url=`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;window.open(url,'_blank');formDialog.close()};renderCart();
