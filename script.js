@@ -1,5 +1,5 @@
 // GANTI nomor berikut dengan nomor WhatsApp Business: kode negara 62, tanpa + atau 0 awal.
-const WHATSAPP_NUMBER = "6281234567890";
+const WHATSAPP_NUMBER = "6281535360775";
 const products=[
  {id:"original",name:"Original",price:12000,color:"#f4df83",desc:"Keripik pisang original dengan cita rasa gurih dan renyah.",img:"assets/original.svg"},
  {id:"coklat",name:"Cokelat",price:15000,color:"#b78358",desc:"Keripik pisang dengan sentuhan rasa cokelat.",img:"assets/coklat.svg"},
